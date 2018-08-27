@@ -1,0 +1,690 @@
+{
+	"info": {
+		"_postman_id": "1877da8b-0792-477c-bab3-7aef2b8edda6",
+		"name": "QAG_Diprella",
+		"description": "API documentation https://beta.diprella.com/docs/",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Course",
+			"item": [
+				{
+					"name": "Install BDD",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6a12d746-4bab-4495-a3d6-a2d9e65b4fb6",
+								"type": "text/javascript",
+								"exec": [
+									"// If the \"postman_bdd_path\" environment variable is set, then we'll use it.",
+									"// Otherwise, we'll default to the published version",
+									"if (!environment.postman_bdd_path) {",
+									"    postman.setGlobalVariable('postman_bdd_path', 'http://bigstickcarpet.com/postman-bdd/dist/postman-bdd.min.js');",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ef4284b-cf8d-4ec1-b0a8-6431f942bd35",
+								"type": "text/javascript",
+								"exec": [
+									"// \"install\" Postman BDD",
+									"postman.setGlobalVariable('postmanBDD', responseBody);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "http://bigstickcarpet.com/postman-bdd/dist/postman-bdd.min.js",
+							"protocol": "http",
+							"host": [
+								"bigstickcarpet",
+								"com"
+							],
+							"path": [
+								"postman-bdd",
+								"dist",
+								"postman-bdd.min.js"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign up",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "771d51a3-1d9e-4d93-a139-344720dc0a0a",
+								"type": "text/javascript",
+								"exec": [
+									"var time = Math.round(+new Date()/1000);",
+									"postman.setEnvironmentVariable(\"timestamp\", time);",
+									"",
+									"var email = environment.emailName + \"_\" +environment.timestamp + environment.domainName;",
+									"postman.setEnvironmentVariable(\"email1\", email);",
+									"",
+									"",
+									"",
+									"pm.environment.set(\"first_name\", \"Frank \" + parseInt(Math.random() * 10000));"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4c7b5088-eac1-4f37-8a03-ebb68d0c447e",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"",
+									"//Create the most common tests within the Global Variable",
+									"postman.setGlobalVariable(\"СommonTestsForSuccessfullResponce\", () => {",
+									"  it('Common Case 1: should return one of success responces with 200, 201 or 202 status code', () => {",
+									"\tresponse.status.should.be.oneOf([201, 200, 202]); ",
+									"  });",
+									"  it('Common Case 2: should return a JSON response', () => {",
+									"    \tresponse.should.be.json;",
+									"    \tresponse.should.have.header('content-type', 'application/json');",
+									"        response.type.should.equal('application/json');",
+									"        response.body.should.not.be.empty;",
+									"  });",
+									"  it('Common Case 3: should return OK message in response', () => {",
+									"     \tresponse.ok.should.be.true;",
+									"     \tresponse.statusType.should.equal(2);",
+									"        response.error.should.be.false;",
+									"  }); ",
+									"});",
+									"eval(globals.СommonTestsForSuccessfullResponce)();",
+									"",
+									"describe('Test 1: Get correct Response Body and Headers', () => { ",
+									"",
+									"\tit('Test 1.1: should set the cookies to the correct values', () => {",
+									"    response.should.have.cookie('__cfduid', 'd54fe52d64b41c1659abe4b6aa2e3d54f1532627139');",
+									"    });",
+									"    ",
+									"    it('Test 1.2: should return the correct Email', () => {",
+									"    response.body.email.should.equal(pm.environment.get(\"email1\")); ",
+									"    });",
+									"    ",
+									"    it('Test 1.3: should return the correct First Name', () => {",
+									"    response.body.first_name.should.equal(pm.environment.get(\"first_name\")); ",
+									"    });",
+									"});",
+									"",
+									"pm.environment.set(\"access_token\", jsonData.token);",
+									"pm.environment.set(\"email1\", jsonData.email);",
+									"pm.environment.set(\"userId\", jsonData.id);",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\":\"{{email1}}\",\r\n\t\"password\":\"{{password}}\",\r\n\t\"first_name\":\"{{first_name}}\",\r\n\t\"last_name\":\"Dumont\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/sign_up",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"sign_up"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d61647aa-0af9-4c85-a78a-385b7bef91e2",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"",
+									"eval(globals.СommonTestsForSuccessfullResponce)();",
+									"",
+									"describe('Verify Response Body Schema', () => { ",
+									" it('should match against a JSON Schema', () => {",
+									"    response.body.should.have.schema({",
+									"        type: 'object',",
+									"        required: ['id', 'first_name', 'last_name', 'email', 'phone', 'type', 'avatar', 'company_id', 'part_email', 'headline', 'biography', 'fb_link', 'tw_link', 'tl_link', 'used_memory', 'url', 'status', 'privacy', 'pay_card', 'banner_view', 'token'],",
+									"        properties: {",
+									"            id: {",
+									"                type: 'integer',",
+									"            },",
+									"            first_name: {",
+									"                type: 'string',",
+									"            },",
+									"            last_name: {",
+									"                type: 'string',",
+									"            },",
+									"            email: {",
+									"                type: 'string',",
+									"            },",
+									"            phone: {",
+									"                type: 'string',",
+									"            },",
+									"            type: {",
+									"                type: 'string',",
+									"            },",
+									"            avatar: {",
+									"                type: 'null',",
+									"            },",
+									"            company_id: {",
+									"                type: 'integer',",
+									"            },",
+									"            part_email: {",
+									"                type: 'string',",
+									"            },",
+									"            headline: {",
+									"                type: 'string',",
+									"            },",
+									"            biography: {",
+									"                type: 'string',",
+									"            },",
+									"            fb_link: {",
+									"                type: 'null',",
+									"                pattern: 'https?://(\\\\w+\\\\.)+\\\\w+(/\\\\w+)*'",
+									"            },",
+									"            tw_link: {",
+									"                type: 'null',",
+									"                pattern: 'https?://(\\\\w+\\\\.)+\\\\w+(/\\\\w+)*'",
+									"            },",
+									"            tl_link: {",
+									"                type: 'null',",
+									"                pattern: 'https?://(\\\\w+\\\\.)+\\\\w+(/\\\\w+)*'",
+									"            },",
+									"            used_memory: {",
+									"                type: 'integer',",
+									"            },",
+									"            url: {",
+									"                type: 'string',",
+									"            },",
+									"            status: {",
+									"                type: 'integer',",
+									"            },",
+									"            privacy: {",
+									"                type: 'integer',",
+									"            },",
+									"            pay_card: {",
+									"                type: 'integer',",
+									"            },",
+									"            banner_view: {",
+									"                type: 'integer',",
+									"            },",
+									"            token: {",
+									"                type: 'string',",
+									"            },",
+									"            ",
+									"        }",
+									"    });",
+									"});",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\":\"{{email1}}\",\r\n\t\"password\":\"{{password}}\"\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{url}}/api/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get categories List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f7a317ae-14da-42ba-a9ad-2df82a48fb3d",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"console.log (jsonData);",
+									"",
+									"eval(globals.СommonTestsForSuccessfullResponce)();",
+									"",
+									"describe('Get id data', () => {",
+									"  it('should check the id property is present', () => {",
+									"      for(i=0; i < response.body.length; i++) {",
+									"          console.log(response.body[i]);",
+									"          response.body[i].should.have.property('id');",
+									"      }",
+									"  })",
+									"})"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/courses/list",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f44b4d95-6c50-4484-9c69-f68a1d03a6d9",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"console.log (jsonData);",
+									"",
+									"eval(globals.СommonTestsForSuccessfullResponce)();",
+									"",
+									"pm.environment.set(\"courseId\", jsonData.id);",
+									"",
+									"describe('Get course id', () => { \t ",
+									"\tit('should return the correct course Id', () => { ",
+									"\t    response.body.id.should.equal(pm.environment.get(\"courseId\"));",
+									"\t});",
+									"});",
+									"",
+									"describe('Verify Response Headers', () => { ",
+									"\tit('should set Required metadata in  header', () => {",
+									"\t\tresponse.should.have.header('Date');",
+									"\t\tresponse.should.have.header('Server'); ",
+									"\t\tresponse.should.have.header('Expect-CT');",
+									"\t});",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "49aaf74e-590c-4548-aecb-783e624ba0c2",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "JS RoadTrip",
+									"type": "text"
+								},
+								{
+									"key": "privacy",
+									"value": "public",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file"
+								},
+								{
+									"key": "description",
+									"value": "The course is all about JS",
+									"type": "text"
+								},
+								{
+									"key": "level",
+									"value": "beginner",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Why do we believe better UI/UX is a key differenciator for Software success",
+									"type": "text"
+								},
+								{
+									"key": "lang",
+									"value": "en",
+									"type": "text"
+								},
+								{
+									"key": "video_cover",
+									"type": "file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/course/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create article",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1a215c27-17be-477c-b6c6-bfc4b4734797",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"console.log (jsonData);",
+									"",
+									"eval(globals.СommonTestsForSuccessfullResponce)();",
+									"",
+									"pm.environment.set(\"articleId\", jsonData.id);",
+									"",
+									"describe('Get correct Article Response data', () => { \t ",
+									"\tit('should return the correct article Id', () => { ",
+									"\t    response.body.id.should.equal(pm.environment.get(\"articleId\"));",
+									"\t    response.body.user_id.should.equal(pm.environment.get(\"userId\"));",
+									"\t    response.body.expected_time.should.equal(10800);",
+									"\t});",
+									"});",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "49aaf74e-590c-4548-aecb-783e624ba0c2",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"title\":\"Testable article for JS course\",\n\t\"description\":\"\",\n\t\"article\":\"Vel et ad beatae quis dignissimos debitis doloremque Nam et\",\n\t\"type\":\"article\",\n\t\"presentation\":\"\",\n\t\"expected_time\":10800,\n\t\"hours\":\"3\",\n\t\"minutes\":\"\",\n\t\"module_id\":\"102\",\n\t\"course_id\":\"{{courseId}}\",\n\t\"id\":null,\n\t\"files_id\":[],\n\t\"answer\":0\n\t\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/article/create",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"article",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Preview Created Course",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2593ad70-eb46-417e-b5e6-62c7990ba7eb",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"console.log (jsonData);",
+									"",
+									"eval(globals.СommonTestsForSuccessfullResponce)();",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/course/module/list?course_id={{courseId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"module",
+								"list"
+							],
+							"query": [
+								{
+									"key": "course_id",
+									"value": "{{courseId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Course Setting Last Step",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "27cada8a-fca1-4533-ab9e-b3084fe5e5e8",
+								"type": "text/javascript",
+								"exec": [
+									"eval(globals.postmanBDD);",
+									"let jsonData = JSON.parse(responseBody);",
+									"console.log (jsonData);",
+									"",
+									"eval(globals.СommonTestsForSuccessfullResponce)();"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "49aaf74e-590c-4548-aecb-783e624ba0c2",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "course_id",
+									"value": "{{courseId}}",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "quiz",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/course/settings?course_id={{courseId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"settings"
+							],
+							"query": [
+								{
+									"key": "course_id",
+									"value": "{{courseId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

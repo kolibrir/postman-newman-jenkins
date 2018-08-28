@@ -82,7 +82,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4c7b5088-eac1-4f37-8a03-ebb68d0c447e",
+								"id": "da3ab082-bbf0-4121-972c-4cb33828b540",
 								"type": "text/javascript",
 								"exec": [
 									"eval(globals.postmanBDD);",
@@ -108,11 +108,6 @@
 									"eval(globals.СommonTestsForSuccessfullResponce)();",
 									"",
 									"describe('Test 1: Get correct Response Body and Headers', () => { ",
-									"",
-									"\tit('Test 1.1: should set the cookies to the correct values', () => {",
-									"    response.should.have.cookie('__cfduid', 'd54fe52d64b41c1659abe4b6aa2e3d54f1532627139');",
-									"    });",
-									"    ",
 									"    it('Test 1.2: should return the correct Email', () => {",
 									"    response.body.email.should.equal(pm.environment.get(\"email1\")); ",
 									"    });",
